@@ -1,0 +1,27 @@
+import subprocess
+
+# Open and read the passwords from dictionary.txt, stripping newline characters
+with open("dictionary.txt", "r") as file:
+    pos_pw_list = [line.strip() for line in file]
+
+# File to log the responses
+log_file = "password_attempts.log"
+
+# Open the log file in write mode
+with open(log_file, "w") as log:
+    for password in pos_pw_list:
+        # Run the level5.py script and pass the password to it
+        process = subprocess.Popen(["python3", "level5.py"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        
+        # Send the password as input to the script
+        stdout, stderr = process.communicate(input=password + "\n")
+        
+        # Log the result
+        log.write(f"Password: {password}\n")
+        log.write(stdout)
+        log.write("\n----------------------\n")
+        
+        # Check if the correct flag was found
+        if "your flag" in stdout:
+            print(f"Correct password found: {password}")
+            break
